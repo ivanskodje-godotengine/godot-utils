@@ -29,7 +29,6 @@ class Log:
 	# in order to populate the logger with function name
 	func start(function_name):
 		current_function_name = function_name
-		return Stopwatch.create_started()
 	
 	func end():
 		current_function_name = ""
