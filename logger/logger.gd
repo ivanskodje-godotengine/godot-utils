@@ -1,9 +1,9 @@
 extends Node
 
-
+# Use this on each script you wish to use the Logger:
+# onready var Log = Logger.get_logger("script_name.gd")
 func get_logger(script_name):
 	return Log.new(script_name)
-
 
 class Log:
 	# GLOBAL DEFAULT LOGGING CONFIGURATION
@@ -15,7 +15,7 @@ class Log:
 	var error_logging = true
 	
 	# LOGGING 
-	const LOG_FORMAT = " {level} [{current_time}] [{script_name}] [{function_name}] >> {msg}"
+	const LOG_FORMAT = "[{current_time}] {level} [{script_name}] [{function_name}] >> {msg}"
 	
 	# Logger script name
 	var script_name = ""
@@ -35,31 +35,34 @@ class Log:
 		current_function_name = ""
 	
 	func info(message, function_name = ""):
-		var level = "INFO"
+		if(!info_logging):
+			return
+		var level = "| INFO  |"
 		_log(level, message, function_name)
 	
 	func debug(message, function_name = ""):
-		var level = "DEBUG"
+		if(!debug_logging):
+			return
+		var level = "| DEBUG |"
 		_log(level, message, function_name)
 
 	func warn(message, function_name = ""):
-		var level = "WARN"
+		if(!warn_logging):
+			return
+		var level = "| WARN  |"
 		_log(level, message, function_name)
 		
 	func error(message, function_name = ""):
-		var level = "ERROR"
+		if(!error_logging):
+			return
+		var level = "| ERROR |"
 		_log(level, message, function_name)
 	
 	func _log(level, message, function_name = ""):
-		if(!debug_logging):
-			return
-		
 		if(function_name.empty()):
 			function_name = current_function_name
-		
 		var log_message = LOG_FORMAT.format({"level": level, "current_time": _get_current_time(), "script_name": script_name, "function_name": function_name, "msg": message})
 		print(log_message)
-	
 	
 	func _get_current_time():
 		var date_time = OS.get_datetime()
@@ -69,7 +72,6 @@ class Log:
 		# var time_format = "{year}.{month}." + ("{day}".pad_zeros(5)) + " - [{hour}:{minute}:{second}]"
 		var time_format = "{year}.{month}.{day} {hour}:{minute}:{second}"
 		return time_format.format(date_time)
-	
 	
 	func _pad_zeros_in_dictionary(dictionary, padding):
 		for key in dictionary:
