@@ -2,7 +2,9 @@
 A simple stopwatch tool to keep track of time used between start and stop.
 
 # How to use
-In order to start the time, and get a Stopwatch object from the logger.gd;
+Add the stopwatch.gd script to AutoLoad as a global. Recommend you use the name Stopwatch.
+
+Build a stopwatch object at the beginning of your function you wish to get the time spent on:
 ```
 var stopwatch = Stopwatch.create_started()
 ```
