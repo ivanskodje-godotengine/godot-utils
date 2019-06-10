@@ -1,13 +1,18 @@
 extends Node
 
+# Change to false to completely disable logging
+const ENABLE_LOGGING = true
+
 # Use this on each script you wish to use the Logger:
 # onready var Log = Logger.get_logger("script_name.gd")
 func get_logger(script_name):
-	return Log.new(script_name)
+	if(ENABLE_LOGGING):
+		return Log.new(script_name)
+	else:
+		return DummyLog.new()
 
 class Log:
 	# GLOBAL DEFAULT LOGGING CONFIGURATION
-	# NB: Highly recommend you turn off logging on release, as it significanly reduces speed.
 	# - This can be overridden within each script that utilizes the log tool.
 	var info_logging = true
 	var debug_logging = true
@@ -15,7 +20,7 @@ class Log:
 	var error_logging = true
 	
 	# LOGGING 
-	const LOG_FORMAT = "[{current_time}] | {level}| [{script_name}] [{function_name}] >> {msg}"
+	const LOG_FORMAT = "[{current_time}] | {level} | [{script_name}] [{function_name}] >> {msg}"
 	
 	# Logger script name
 	var script_name = ""
@@ -36,25 +41,25 @@ class Log:
 	func info(message, function_name = ""):
 		if(!info_logging):
 			return
-		var level = _pad_string(6, "INFO")
+		var level = "INFO "
 		_log(level, message, function_name)
 		
 	func debug(message, function_name = ""):
 		if(!debug_logging):
 			return
-		var level = _pad_string(6, "DEBUG")
+		var level = "DEBUG"
 		_log(level, message, function_name)
 
 	func warn(message, function_name = ""):
 		if(!warn_logging):
 			return
-		var level = _pad_string(6, "WARN")
+		var level = "WARN "
 		_log(level, message, function_name)
 		
 	func error(message, function_name = ""):
 		if(!error_logging):
 			return
-		var level = _pad_string(6, "ERROR")
+		var level = "ERROR"
 		_log(level, message, function_name)
 	
 	func _log(level, message, function_name = ""):
@@ -76,9 +81,28 @@ class Log:
 		for key in dictionary:
 			dictionary[key] = str(dictionary[key]).pad_zeros(padding)
 
-	func _pad_string(padding_size, text):
-		if(text.length() < padding_size):
-			var spaces_to_add = padding_size - text.length() 
-			for i in range(0, spaces_to_add):
-				text += " "
-		return text
+
+# DummyLog is initialized if we have disabled logging. 
+# This should effectively disable the logging without additional conditional checks, improving the speed considerably
+# without the need to manually remove every log in the code for production.
+class DummyLog:
+	func _init():
+		pass
+	
+	func start(function_name):
+		pass
+	
+	func end():
+		pass
+	
+	func info(message, function_name = ""):
+		pass
+	
+	func debug(message, function_name = ""):
+		pass
+	
+	func warn(message, function_name = ""):
+		pass
+	
+	func error(message, function_name = ""):
+		pas
