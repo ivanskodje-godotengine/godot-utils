@@ -1,77 +1,100 @@
 # Logger
 
-A logging tool for GDScript.
-When used, it will by default print out debug, warn, error or info logging,
-unless set to false in the script or on the object itself.
+A logging tool for GDScript.  
+
+- Will print detailed messages to console.
+- Will write to a log file.
+- Supports use of multiple log files.
+
 
 # How to use
 
-Add the logger.gd to AutoLoad: Select Project -> Project Settings, and choose the AutoLoad tab.
-Recommend you use the name Logger for the global.
+## Add to Global Autoload
+Select Project -> Project Settings, and choose the AutoLoad tab.  
+Select the `logger.gd` script, and give it a good name.
+> Recommend you use the name **Logger** as the global variable.
 
-In order to use it, you create your Log objec on your script (not inside a function):
 
-```
-onready var Log = Logger.get_logger("your_script_name.gd")
-```
-
-You can then specify the function name at the beginning (optional) by using:
+## Preparing the Logger
+By default we expect the script name to be used as the argument for the `get_logger` method.
 
 ```
-Log.start("function_name()")
+var Log = Logger.get_logger("script_name_goes_here.gd")
 ```
 
-Which will enable the Log object to keep track of which function you are currently in. It will stay there until you use `Log.end()`, or set a new `Log.start("other_function_name")`.
-
-You can specify 4 logging levels; Log.info, Log.debug, Log.warn, and Log.error.
-There is no difference between them, other than what will be written in the log, and whether or not the "x_logger" boolean is set to true or false in the logger.gd script.
-
-You can also specify the function name directly in the log:
+This will prepare a default `FileWriter` that will write the logs to a file found in `user://` directory. This behavior can be overridden by adding additional information, such as this:
 
 ```
-Log.info("Starting the game!", "_ready()")
+var Log = Logger.get_logger("script_name_goes_here.gd", "res://", "custom_log_name")
 ```
 
-Which will output:
+This will write the logs used by the `Log` object in your `res://` folder, with the name `custom_log_name`. Each log has a date set on it, so the full name would appear something such as `res://2019-06-10-custom_log_name.log`.
+
+## How to use it
+
+There are four kinds of logs.
+- info
+- debug
+- warn
+- error
+
+For example, using the info log level:
+
+```python
+var Log = Logger.get_logger("script_name_goes_here.gd")
+
+func _ready():
+	Log.info("Starting the game!", "_ready func")
+```
+
+Which will output the following (*with a different time stamp, of course*):
 
 ```
-[2019.06.10 8:32:44] | INFO  | [example.gd] [_ready()] >> Starting the game!
+[2019.06.10 8:32:44] | INFO  | [script_name_goes_here.gd] [_ready func] >> Starting the game!
 ```
 
-## Example of Use:
+The same printed line will also be found in the default log path: 
+`user://2019-06-10-logger.log`.
+> on windows it can by default be found in `C:\Users\%USERNAME%\AppData\Roaming\Godot\app_userdata\<your-app>\`
+
+## Example
 
 ### example.gd script:
 
-```
+```python
 extends Node
 
 # Logging
-onready var Log = Logger.get_logger("example.gd")
+var Log = Logger.get_logger("example.gd", "res://", "example-logs")
 
 func _ready():
-	Log.start("_ready()")
-	Log.info("Starting the Awesome game. ")
+	Log.start("_ready()") # now we wont have to specify function name in the other log statements
 
+	Log.info("Starting the game")
+
+	Log.debug("Debug information about values and such")
 	# Do some work here
-	Log.debug("Attempting to do something important. ")
 	# ...
 
-	# Some warning
-	Log.warn("User forgot to configure something. Falling back to default values. ")
+	Log.warn("User forgot to configure something. Falling back to default values. :C ")
 
-	# Some critical error that prevents the application to function
-	Log.error("Unable to retrieve cheesecake from the oven. Terminating game. ")
+	# Critical error that prevents the application to function!
+	Log.error("Unable to retrieve the cheese from the mouse!")
 
-	# Usually everything would stop by now, but this is just to show you
-	# how we would tell the logger to end, and forget the function name stored.
+	# Specify the end of the use of the default function name. 
+	# This can also be done by setting the function name in the 
+	# next method,without the use of the end() function in the Log.
 	Log.end()
 ```
 
 ### Output (with default formatting)
 
 ```
-[2018.04.15 12:57:47] | INFO  | [example.gd] [_ready()] >> Starting the Awesome game.
-[2018.04.15 12:57:47] | DEBUG | [example.gd] [_ready()] >> Attempting to do something important.
-[2018.04.15 12:57:47] | WARN  | [example.gd] [_ready()] >> User forgot to configure something. Falling back to default values.
-[2018.04.15 12:57:47] | ERROR | [example.gd] [_ready()] >> Unable to retrieve cheesecake from the oven. Terminating game.
+[2018.04.15 12:57:47] | INFO  | [example.gd] [_ready()] >> Starting the game
+[2018.04.15 12:57:47] | DEBUG | [example.gd] [_ready()] >> Debug information about values and such
+[2018.04.15 12:57:47] | WARN  | [example.gd] [_ready()] >> User forgot to configure something. Falling back to default values. :C 
+[2018.04.15 12:57:47] | ERROR | [example.gd] [_ready()] >> Unable to retrieve the cheese from the mouse!
 ```
+
+Identical output in the log file. If the log file exists, we will append logs to it. 
+Every day a different log file will be used, since we are using a time stamp in the file name.
