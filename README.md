@@ -1,4 +1,5 @@
 # Godot Utils
+
 #### godot-utils
 
 A bunch of tools and scripts that can be used for any Godot Engine 3.0 project.
@@ -7,7 +8,7 @@ A bunch of tools and scripts that can be used for any Godot Engine 3.0 project.
 
 MIT License (MIT)
 
-Copyright (c) 2018 Ivan P. Skodje
+Copyright (c) 2019 Ivan P. Skodje
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

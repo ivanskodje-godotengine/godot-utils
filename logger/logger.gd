@@ -15,7 +15,7 @@ class Log:
 	var error_logging = true
 	
 	# LOGGING 
-	const LOG_FORMAT = "[{current_time}] {level} [{script_name}] [{function_name}] >> {msg}"
+	const LOG_FORMAT = "[{current_time}] | {level}| [{script_name}] [{function_name}] >> {msg}"
 	
 	# Logger script name
 	var script_name = ""
@@ -36,25 +36,25 @@ class Log:
 	func info(message, function_name = ""):
 		if(!info_logging):
 			return
-		var level = "| INFO  |"
+		var level = _pad_string(6, "INFO")
 		_log(level, message, function_name)
-	
+		
 	func debug(message, function_name = ""):
 		if(!debug_logging):
 			return
-		var level = "| DEBUG |"
+		var level = _pad_string(6, "DEBUG")
 		_log(level, message, function_name)
 
 	func warn(message, function_name = ""):
 		if(!warn_logging):
 			return
-		var level = "| WARN  |"
+		var level = _pad_string(6, "WARN")
 		_log(level, message, function_name)
 		
 	func error(message, function_name = ""):
 		if(!error_logging):
 			return
-		var level = "| ERROR |"
+		var level = _pad_string(6, "ERROR")
 		_log(level, message, function_name)
 	
 	func _log(level, message, function_name = ""):
@@ -75,3 +75,10 @@ class Log:
 	func _pad_zeros_in_dictionary(dictionary, padding):
 		for key in dictionary:
 			dictionary[key] = str(dictionary[key]).pad_zeros(padding)
+
+	func _pad_string(padding_size, text):
+		if(text.length() < padding_size):
+			var spaces_to_add = padding_size - text.length() 
+			for i in range(0, spaces_to_add):
+				text += " "
+		return text
